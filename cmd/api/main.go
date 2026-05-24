@@ -4,22 +4,26 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
-
-func home(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "This is home :3")
-	fmt.Println("turim login mamamia")
-}
 
 func main() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", home)
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, r)
+		log.Println("turim request")
+	})
 
-	err := http.ListenAndServe(":8000", mux)
-	fmt.Println("Serving traffic @ localhost:8000")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	fmt.Println("Serving traffic on port ", port)
+	err := http.ListenAndServe(":"+port, mux)
 	if err != nil {
-		log.Fatal("nepasileido :(")
+		log.Fatal("Server failed to start:", err)
 	}
 
 }
