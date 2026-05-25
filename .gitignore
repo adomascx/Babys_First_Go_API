@@ -19,3 +19,6 @@ go.work.sum
 
 # IDE
 .vscode/
+
+# air Temporary files
+**/tmp/

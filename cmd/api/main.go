@@ -12,7 +12,7 @@ func main() {
 
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, r)
-		log.Println("turim request")
+		log.Println("GET request received")
 	})
 
 	port := os.Getenv("PORT")
