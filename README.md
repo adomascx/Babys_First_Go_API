@@ -1,8 +1,11 @@
-# Baby's first Go WebSocket
+# Baby's first Go REST API
 
-A Proof-of-Concept Go WebSocket
+A Proof-of-Concept Go REST API
 
-- [Baby's first Go WebSocket](#babys-first-go-websocket)
+## Table of Contents
+
+- [Baby's first Go REST API](#babys-first-go-REST API)
+  - [Table of Contents](#table-of-contents)
   - [Project Description](#project-description)
     - [Tech Stack](#tech-stack)
     - [Features](#features)
@@ -12,7 +15,9 @@ A Proof-of-Concept Go WebSocket
 
 ## Project Description
 
-This project is meant as a training ground for learning Go's networking as well as API development fundamentals. Adherence to both Golang and API standards was prioritized, whilst trying not to "overengineer" what is basically an example project. So far, the goal is only to create a functional WebSocket, with specialization to come afterwards.
+This project is meant as a training ground for learning Go's networking as well as API development fundamentals.
+Adherence to both Golang and API standards was prioritized, whilst trying not to "overengineer" what is basically an example project.
+So far, the goal is only to create a functional REST API, with specialization to come afterwards.
 
 ### Tech Stack
 
@@ -56,4 +61,9 @@ go run ./cmd/api
 
 ## Development Notes
 
-This is still an early-stage project. The README will likely grow once the WebSocket layer, tests, and request flow settle down.
+This is still an early-stage project. The README will likely grow once the REST API layer, tests, and request flow settle down.
+
+### Planned features
+
+- Parallelization of page retrieval via Goroutines
+- Front-end API demo
