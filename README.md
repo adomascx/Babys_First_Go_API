@@ -4,7 +4,7 @@ A Proof-of-Concept Go REST API
 
 ## Table of Contents
 
-- [Baby's first Go REST API](#babys-first-go-REST API)
+- [Baby's first Go REST API](#babys-first-go-rest-api)
   - [Table of Contents](#table-of-contents)
   - [Project Description](#project-description)
     - [Tech Stack](#tech-stack)
@@ -12,6 +12,7 @@ A Proof-of-Concept Go REST API
     - [Project Structure](#project-structure)
   - [Getting started](#getting-started)
   - [Development Notes](#development-notes)
+    - [Planned features](#planned-features)
 
 ## Project Description
 
