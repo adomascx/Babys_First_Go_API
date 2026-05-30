@@ -1,0 +1,67 @@
+openapi: 3.0.4
+info:
+  title: Baby's first Go API
+  description: A Proof-of-Concept Go REST API
+  version: 0.1.0
+
+servers:
+  - url: https://babys-first-go-web-socket-omyhlhj4xq-lz.a.run.app
+    description: Production server (Deployed on Google Cloud)
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /user:
+    get:
+      summary: Returns a user
+      description: Currently a placeholder; returns an empty response body
+      responses:
+        "200":
+          description: OK
+
+    post:
+      summary: Creates a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                balance:
+                  type: integer
+                  format: int32
+              required:
+                - name
+                - balance
+      responses:
+        "200":
+          description: The created user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    format: int32
+                  name:
+                    type: string
+                  balance:
+                    type: integer
+                    format: int32
+                required:
+                  - id
+                  - name
+                  - balance
