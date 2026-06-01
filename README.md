@@ -1,24 +1,23 @@
-# Baby's first Go REST API
+# Skelbiu API
 
-A Proof-of-Concept Go REST API
+A Go REST API that serves scraped skelbiu.lt listings.
 
 ## Table of Contents
 
-- [Baby's first Go REST API](#babys-first-go-rest-api)
+- [Skelbiu API](#skelbiu-api)
   - [Table of Contents](#table-of-contents)
   - [Project Description](#project-description)
     - [Tech Stack](#tech-stack)
     - [Features](#features)
     - [Project Structure](#project-structure)
   - [Getting started](#getting-started)
-  - [Development Notes](#development-notes)
+  - [Design Notes](#design-notes)
     - [Planned features](#planned-features)
 
 ## Project Description
 
-This project is meant as a training ground for learning Go's networking as well as API development fundamentals.
-Adherence to both Golang and API standards was prioritized, whilst trying not to "overengineer" what is basically an example project.
-So far, the goal is only to create a functional REST API, with specialization to come afterwards.
+This project implements an API representation of public Skelbiu.lt listings, which is particularly useful for listing analyses via LLMs (e.g. "best deal" finder).
+Aside from that, it serves as a personal training ground for learning Go's networking and API development fundamentals as well as best practices in production environments.
 
 ### Tech Stack
 
@@ -31,13 +30,17 @@ So far, the goal is only to create a functional REST API, with specialization to
 
 - Integrated Postman `Local` and `Prod` environments
 - Ready-to-use Air and Postman configs
-- More to come ;)
+- Unit testing/benchmarks for most functions
 
 ### Project Structure
 
 - `cmd/api` - Application entry point
-- `internal` - Internal packages and future implementation details
-- `postman` - Collection files and environments for API testing
+- `api` - OpenAPI spec (`openapi.yaml`)
+- `internal` - Internal Go packages and implementation details
+  - `internal/handler` - HTTP handlers and routing
+  - `internal/model` - Domain models, listing definitions, and query helpers
+  - `internal/scraper` - Scraper implementation and tests
+- `postman` - Postman collections and environments for testing <!-- outdated, update once API is finalized -->
 
 ## Getting started
 
@@ -56,15 +59,19 @@ go run ./cmd/api
 To use a custom port, set `PORT` first:
 
 ```cmd
-set PORT=8081
+set PORT=8080
 go run ./cmd/api
 ```
 
-## Development Notes
+## Design Notes
 
-This is still an early-stage project. The README will likely grow once the REST API layer, tests, and request flow settle down.
+- LLMs were only used for answering technical questions, in order to necessitate personal learning. For example, all documentation was hand written by me :p
+- Go's stdlib was used as much as possible, with a few exceptions <!-- "such as..." FILL IN -->
+- The project's file structure was build from the ground up to be standardized
+- A lack of caching/storage was a deliberate choice, as this avoids possible violations of EU's GDPR laws
 
 ### Planned features
 
 - Parallelization of page retrieval via Goroutines
 - Front-end API demo
+- Front-end "best deal finder" application
