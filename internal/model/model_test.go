@@ -7,13 +7,12 @@ import (
 )
 
 func TestQueryString(t *testing.T) {
-	want := "category_id=80&cities=465%2C43&condition=2&cost_max=420&cost_min=69&keywords=test&type=1"
+	want := "category_id=80&cities=465%2C43&condition=2&cost_max=420&cost_min=69&keywords=test&type=1&user_type=1"
 	have := QueryParams{
 		Keyword:       "test",
 		Cities:        "465,43",
 		CategoryID:    80,
-		ListingOrigin: 0,
-		OrderBy:       0,
+		ListingOrigin: 1,
 		MinCostCents:  69,
 		MaxCostCents:  420,
 		IsSeller:      1,
