@@ -48,8 +48,12 @@ type QueryParams struct {
 	ConditionType ConditionType `url:"condition,omitempty"`   // 0 = either, 1 = new, 2 = used
 }
 
-func (q QueryParams) String() string {
+func (q QueryParams) Encode() string {
 	values, _ := query.Values(q)
 
 	return values.Encode()
+}
+
+func (q QueryParams) Decode(string) {
+
 }

@@ -3,8 +3,10 @@ package model_test
 import (
 	"testing"
 
-	. "github.com/adomascx/Babys_First_Go_API/internal/model"
+	. "github.com/adomascx/Skelbiu_API/internal/model"
 )
+
+// --- Query ---
 
 func TestQueryString(t *testing.T) {
 	want := "category_id=80&cities=465%2C43&condition=2&cost_max=420&cost_min=69&keywords=test&type=1&user_type=1"
@@ -17,10 +19,10 @@ func TestQueryString(t *testing.T) {
 		MaxCostCents:  420,
 		IsSeller:      1,
 		ConditionType: 2,
-	}.String()
+	}.Encode()
 
 	if want != have {
-		t.Errorf("\nquery.String(fullQuery):\nHave = %v\nWant =  %v", have, want)
+		t.Errorf("query.String(fullQuery) - Did not return valid query:\nHave = %v\nWant =  %v", have, want)
 	}
 
 }
@@ -39,7 +41,7 @@ func BenchmarkQueryStringFull(b *testing.B) {
 	}
 
 	for b.Loop() {
-		_ = query.String()
+		_ = query.Encode()
 	}
 }
 
@@ -47,6 +49,6 @@ func BenchmarkQueryStringEmpty(b *testing.B) {
 	query := QueryParams{}
 
 	for b.Loop() {
-		_ = query.String()
+		_ = query.Encode()
 	}
 }
