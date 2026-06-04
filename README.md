@@ -12,6 +12,7 @@ A Go REST API that serves scraped skelbiu.lt listings.
     - [Project Structure](#project-structure)
   - [Getting started](#getting-started)
   - [Design Notes](#design-notes)
+    - [Process Flow Diagram](#process-flow-diagram)
     - [Planned features](#planned-features)
 
 ## Project Description
@@ -28,9 +29,10 @@ Aside from that, it serves as a personal training ground for learning Go's netwo
 
 ### Features
 
+- Full OpenAPI specifications
 - Integrated Postman `Local` and `Prod` environments
 - Ready-to-use Air and Postman configs
-- Unit testing/benchmarks for most functions
+- Unit testing/benchmarks for most functionality
 
 ### Project Structure
 
@@ -65,13 +67,20 @@ go run ./cmd/api
 
 ## Design Notes
 
-- LLMs were only used for answering technical questions, in order to necessitate personal learning. For example, all documentation was hand written by me :p
-- Go's stdlib was used as much as possible, with a few exceptions <!-- "such as..." FILL IN -->
+- LLMs were only used for answering technical questions, in order to necessitate personal learning. For instance, all documentation was hand written by me :p
+- Go's stdlib was used as much as possible, with the exception of a scraping framework ([Colly](https://github.com/gocolly/colly)) and a TLS impersonator ([uTLS](https://github.com/refraction-networking/utls))
 - The project's file structure was build from the ground up to be standardized
 - A lack of caching/storage was a deliberate choice, as this avoids possible violations of EU's GDPR laws
+
+### Process Flow Diagram
+
+Our greatest scientists have created this wonderful process flow diagram to illustrate the API's architecture and data flow:
+
+![Flowchart](logic.png)
 
 ### Planned features
 
 - Parallelization of page retrieval via Goroutines
+- Opt-in listing caching w/ PostgreSQL
 - Front-end API demo
 - Front-end "best deal finder" application

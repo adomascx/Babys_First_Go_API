@@ -20,16 +20,9 @@ paths:
               schema:
                 type: string
 
-  /user:
+  /listings:
     get:
-      summary: Returns a user
-      description: Currently a placeholder; returns an empty response body
-      responses:
-        "200":
-          description: OK
-
-    post:
-      summary: Creates a user
+      summary: Returns a list of listings
       requestBody:
         required: true
         content:
@@ -37,7 +30,7 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                URL:
                   type: string
                 balance:
                   type: integer
