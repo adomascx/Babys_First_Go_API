@@ -1,4 +1,12 @@
+owner: "50667789"
+team: "12061348"
+lastUpdatedBy: "50667789"
+lastRevision: 1779664243000
 name: Prod
+color: null
 values:
   - key: baseUrl
-    value: ''
+    value: "https://babys-first-go-web-socket-omyhlhj4xq-lz.a.run.app"
+    enabled: true
+createdAt: 2026-05-24T23:07:42.000Z
+updatedAt: 2026-05-24T23:10:43.000Z
