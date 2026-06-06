@@ -19,7 +19,7 @@ func TestQueryString(t *testing.T) {
 		MaxCostCents:  420,
 		IsSeller:      1,
 		ConditionType: 2,
-	}.Encode()
+	}.String()
 
 	if want != have {
 		t.Errorf("query.String(fullQuery) - Did not return valid query:\nHave = %v\nWant =  %v", have, want)
@@ -41,7 +41,7 @@ func BenchmarkQueryStringFull(b *testing.B) {
 	}
 
 	for b.Loop() {
-		_ = query.Encode()
+		_ = query.String()
 	}
 }
 
@@ -49,6 +49,6 @@ func BenchmarkQueryStringEmpty(b *testing.B) {
 	query := QueryParams{}
 
 	for b.Loop() {
-		_ = query.Encode()
+		_ = query.String()
 	}
 }

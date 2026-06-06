@@ -6,7 +6,10 @@ import (
 	"os"
 
 	"github.com/adomascx/Skelbiu_API/internal/handler"
+	_ "github.com/joho/godotenv/autoload"
 )
+
+const DEFAULT_PORT = "8080"
 
 func main() {
 
@@ -17,7 +20,7 @@ func main() {
 	// HTTP server
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = DEFAULT_PORT
 	}
 
 	log.Println("Serving traffic on port ", port)
