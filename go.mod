@@ -22,4 +22,7 @@ require (
 	google.golang.org/protobuf v1.36.11 // indirect
 )
 
-require github.com/gocolly/colly v1.2.0
+require (
+	github.com/gocolly/colly v1.2.0
+	github.com/joho/godotenv v1.5.1
+)
