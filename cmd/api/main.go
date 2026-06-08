@@ -13,9 +13,9 @@ const DEFAULT_PORT = "8080"
 
 func main() {
 
-	err := godotenv.Load("../../.env")
+	err := godotenv.Load()
 	if err != nil {
-		log.Print("Couldn't load .env file, using default values")
+		log.Println("Couldn't load .env file: ", err)
 	}
 
 	mux := http.NewServeMux()
