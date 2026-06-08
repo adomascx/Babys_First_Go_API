@@ -13,11 +13,11 @@ const (
 type OrderBy int
 
 const (
-	OrderUpdated OrderBy = iota
-	OrderNewest
-	OrderBest
-	OrderCheapest
-	OrderMostExpensive OrderBy = 8
+	Updated OrderBy = iota
+	Newest
+	Best
+	Cheapest
+	MostExpensive OrderBy = 8
 )
 
 type IsSeller int
@@ -40,12 +40,12 @@ type QueryParams struct {
 	Keyword       string        `url:"keywords,omitempty"`    // presumably search bar keywords
 	Cities        string        `url:"cities,omitempty"`      // comma-separated city IDs, e.g. Vilnius and Kaunas = "465,43"
 	CategoryID    int           `url:"category_id,omitempty"` // specific category ID
-	ListingOrigin ListingOrigin `url:"user_type,omitempty"`   // 0 = either, 1 = private, 2 = organization
-	OrderBy       OrderBy       `url:"orderBy,omitempty"`     // 0 = atnaujinti, 1 = naujausi, 2 = tinkamiausi, 3 = pigiausi, 8 = brangiausi
-	MinCostCents  int           `url:"cost_min,omitempty"`    // minimum price as int, where 1 = 0,01€
-	MaxCostCents  int           `url:"cost_max,omitempty"`    // maximum price as int, where 1 = 0,01€
-	IsSeller      IsSeller      `url:"type,omitempty"`        // 0 = either, 1 = seller, 2 = buyer
-	ConditionType ConditionType `url:"condition,omitempty"`   // 0 = either, 1 = new, 2 = used
+	ListingOrigin ListingOrigin `url:"user_type,omitempty"`   // ListerEither = 0, ListerPrivate = 1, ListerOrganization = 2
+	OrderBy       OrderBy       `url:"orderBy,omitempty"`     // Updated = 0, Newest = 1, Best = 2, Cheapest = 3, MostExpensive = 8
+	MinCost       float64       `url:"cost_min,omitempty"`    // minimum price in €
+	MaxCost       float64       `url:"cost_max,omitempty"`    // maximum price in €
+	IsSeller      IsSeller      `url:"type,omitempty"`        // SellerOrBuyer = 0, Seller = 1, Buyer = 2
+	ConditionType ConditionType `url:"condition,omitempty"`   // ConditionEither = 0, ConditionNew = 1, ConditionUsed = 2
 }
 
 func (q QueryParams) String() string {

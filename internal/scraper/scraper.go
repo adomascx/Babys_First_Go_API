@@ -31,8 +31,8 @@ func ScrapeListings(query model.QueryParams, pages int) ([]model.Listing, error)
 	// Listings init
 	listings := make([]model.Listing, 24*pages)
 
-	// Set concurrency based on env file.
-	// May result in blocked requests.
+	// Set concurrency based on env file. May result in blocked requests.
+	// Defaults to 'false'
 	useConcurrency := strings.EqualFold(os.Getenv("USE_CONCURRENCY"), "true")
 	collector := colly.NewCollector(colly.Async(useConcurrency))
 

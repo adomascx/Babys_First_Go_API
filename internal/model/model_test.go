@@ -6,8 +6,6 @@ import (
 	. "github.com/adomascx/Skelbiu_API/internal/model"
 )
 
-// --- Query ---
-
 func TestQueryString(t *testing.T) {
 	want := "category_id=80&cities=465%2C43&condition=2&cost_max=420&cost_min=69&keywords=test&type=1&user_type=1"
 	have := QueryParams{
@@ -15,8 +13,8 @@ func TestQueryString(t *testing.T) {
 		Cities:        "465,43",
 		CategoryID:    80,
 		ListingOrigin: 1,
-		MinCostCents:  69,
-		MaxCostCents:  420,
+		MinCost:       69,
+		MaxCost:       420,
 		IsSeller:      1,
 		ConditionType: 2,
 	}.String()
@@ -34,8 +32,8 @@ func BenchmarkQueryStringFull(b *testing.B) {
 		CategoryID:    80,
 		ListingOrigin: 0,
 		OrderBy:       0,
-		MinCostCents:  69,
-		MaxCostCents:  420,
+		MinCost:       69,
+		MaxCost:       420,
 		IsSeller:      1,
 		ConditionType: 2,
 	}
