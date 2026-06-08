@@ -8,6 +8,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/http/cookiejar"
 	"os"
 	"strconv"
 	"strings"
@@ -56,7 +57,14 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 		colly.AllowedDomains(skelbiuHost),
 	)
 
-	delay, err := time.ParseDuration(os.Getenv("RATE_LIMIT") + "ms")
+	// set the rate limit from env
+	rateLimit := os.Getenv("RATE_LIMIT")
+
+	if rateLimit == "" {
+		rateLimit = "1000"
+	}
+
+	delay, err := time.ParseDuration(rateLimit + "ms")
 	if err != nil {
 		return nil, fmt.Errorf("could not parse duration for RATE_LIMIT: %w\n", err)
 	}
@@ -64,7 +72,7 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 	err = collector.Limit(&colly.LimitRule{
 		DomainGlob:  skelbiuHost,
 		Parallelism: 2,
-		Delay:       delay * time.Millisecond,
+		Delay:       delay,
 		RandomDelay: 500 * time.Millisecond,
 	})
 	if err != nil {
@@ -83,7 +91,6 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 			// Open TCP connection
 			rawConn, err := dialer.DialContext(ctx, network, addr)
 			if err != nil {
-				rawConn.Close()
 				return nil, fmt.Errorf("could not do dialer.DialContext(): %w\n", err)
 			}
 
@@ -107,15 +114,24 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 		},
 	}
 
+	cookieJar, err := cookiejar.New(nil)
+	if err != nil {
+		return nil, fmt.Errorf("could not create cookiejar: %w\n", err)
+	}
+
 	// Attach uTLS connection to Colly
 	utlsClient := &http.Client{
 		Timeout:   30 * time.Second,
 		Transport: utlsTransport,
+		Jar:       cookieJar,
 	}
 
 	collector.SetClient(utlsClient)
 
-	var mutex sync.Mutex
+	var (
+		mutex     sync.Mutex
+		scrapeErr error
+	)
 
 	collector.OnRequest(func(r *colly.Request) {
 		r.Headers.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
@@ -124,7 +140,7 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 		log.Println("Currently scraping:", r.URL.Path)
 	})
 
-	collector.OnHTML(".standard-list-item > .extended-info", func(h *colly.HTMLElement) {
+	collector.OnHTML(".standard-list-item", func(h *colly.HTMLElement) {
 		// filter sold items
 		if h.DOM.Find(".item.sold").Length() > 0 {
 			return
@@ -132,12 +148,23 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 
 		listing := model.Listing{
 			Link:        h.Request.AbsoluteURL(h.Attr("href")),
-			Title:       h.ChildText(".title"),
+			Title:       h.ChildTexts(".title")[0],
 			Description: h.ChildText(".first-dataline"),
 			Date:        h.ChildText(".second-dataline"),
 		}
 
-		price, _ := parsePrice(h.ChildText(".price"))
+		priceStr := h.ChildTexts(".price")
+		price := 0.0
+
+		// filter listings with no price tag (usually when lister type is buyer)
+		if len(priceStr) != 0 {
+			price, err = parsePrice(priceStr[0])
+			if err != nil {
+				fmt.Printf("could not do parsePrice(%v): %v\n", priceStr[0], err)
+				return
+			}
+		}
+
 		listing.Price = price
 
 		mutex.Lock()
@@ -146,7 +173,10 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 	})
 
 	collector.OnError(func(r *colly.Response, err error) {
-		log.Printf("colly encountered a problem when scraping: %v\n%+v", err, r)
+
+		scrapeErr = fmt.Errorf("scraping failed: status = %v, url = %v, err = %w\n", r.StatusCode, r.Request.URL.String(), err)
+
+		log.Printf("colly encountered a problem when scraping:\nstatus code: %v\nrequest URL: %v\nerror: %v\n", r.StatusCode, r.Request.URL.String(), err)
 	})
 
 	for page := 1; page <= pages; page++ {
@@ -160,6 +190,10 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 	}
 
 	collector.Wait()
+
+	if scrapeErr != nil {
+		return listings, scrapeErr
+	}
 
 	return listings, nil
 }
