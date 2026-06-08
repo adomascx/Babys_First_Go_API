@@ -56,10 +56,15 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 		colly.AllowedDomains(skelbiuHost),
 	)
 
-	err := collector.Limit(&colly.LimitRule{
+	delay, err := time.ParseDuration(os.Getenv("RATE_LIMIT") + "ms")
+	if err != nil {
+		return nil, fmt.Errorf("could not parse duration for RATE_LIMIT: %w\n", err)
+	}
+
+	err = collector.Limit(&colly.LimitRule{
 		DomainGlob:  skelbiuHost,
 		Parallelism: 2,
-		Delay:       1 * time.Second,
+		Delay:       delay * time.Millisecond,
 		RandomDelay: 500 * time.Millisecond,
 	})
 	if err != nil {
@@ -119,7 +124,7 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 		log.Println("Currently scraping:", r.URL.Path)
 	})
 
-	collector.OnHTML(".standard-list-item", func(h *colly.HTMLElement) {
+	collector.OnHTML(".standard-list-item > .extended-info", func(h *colly.HTMLElement) {
 		// filter sold items
 		if h.DOM.Find(".item.sold").Length() > 0 {
 			return

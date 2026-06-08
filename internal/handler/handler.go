@@ -21,7 +21,7 @@ func GetHealth(w http.ResponseWriter, r *http.Request) {
 
 func GetListings(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	log.Println("GET listing request received:", r.Form)
+	log.Printf("GET listing request received")
 
 	query, pages, err := parseQuery(r.Form)
 	if err != nil {
@@ -29,7 +29,7 @@ func GetListings(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid query", http.StatusBadRequest)
 		return
 	}
-	log.Println("parsed query:", query, pages)
+	log.Printf("parsed query: %v, %v", query, pages)
 
 	listings, err := scraper.ScrapeListings(query, pages)
 	if err != nil {
@@ -38,13 +38,18 @@ func GetListings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("scraped listings:", listings[:5], "...")
+	log.Printf("Successfully scraped %v listings.", len(listings))
 
 	// Filter duplicates
 	unfilteredLen := len(listings)
 	listings.Filter()
-	filteredLen := len(listings)
-	log.Println("Filtered", unfilteredLen-filteredLen, "items")
+
+	delta := unfilteredLen - len(listings)
+	if delta != 0 {
+		log.Printf("Filtered %v items", delta)
+	}
+
+	log.Printf("[testing] first found listing:\n%+v", listings[0])
 
 	// Write response as encoded JSON
 	w.WriteHeader(http.StatusOK)
