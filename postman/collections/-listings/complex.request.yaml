@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{url}}?CategoryID=1038&Cities=465&ListingOrigin=1&OrderBy=1&MinCost=70&MaxCost=150&IsSeller=1&Pages=5"
+method: GET
+queryParams:
+  CategoryID: "1038"
+  Cities: "465"
+  ListingOrigin: "1"
+  OrderBy: "1"
+  MinCost: "70"
+  MaxCost: "150"
+  IsSeller: "1"
+  Pages: "5"
+auth:
+  type: noauth
+order: 1000

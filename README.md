@@ -18,13 +18,15 @@ A Go REST API that serves scraped skelbiu.lt listings.
 ## Project Description
 
 This project implements an API representation of public Skelbiu.lt listings, which is particularly useful for listing analyses via LLMs (e.g. "best deal" finder).
-Aside from that, it serves as a personal training ground for learning Go's networking and API development fundamentals as well as best practices in production environments.
+Aside from that, it serves as a personal training ground for learning Go's networking and API development fundamentals, both in serving and receiving HTTP requests, as well as best practices in production environments.
 
 ### Tech Stack
 
 - **Go** - Main language for the backend
-- **Google Cloud Run** - Hosting the server
-- **Postman** - API testing
+  - **Colly** - Web scraping framework
+  - **uTLS** - TLS browser impersonator
+- **Google Cloud Run** - Hosting the production server
+- **Postman** - API endpoint testing
 - **Air** - Live reload for development
 
 ### Features
@@ -32,17 +34,18 @@ Aside from that, it serves as a personal training ground for learning Go's netwo
 - Full OpenAPI specifications
 - Integrated Postman `Local` and `Prod` environments
 - Ready-to-use Air and Postman configs
-- Unit testing/benchmarks for most functionality
+- Full unit testing/benchmarks suite
+- Parallel page scraping
 
 ### Project Structure
 
 - `cmd/api` - Application entry point
 - `api` - OpenAPI spec (`openapi.yaml`)
-- `internal` - Internal Go packages and implementation details
-  - `internal/handler` - HTTP handlers and routing
-  - `internal/model` - Domain models, listing definitions, and query helpers
-  - `internal/scraper` - Scraper implementation and tests
-- `postman` - Postman collections and environments for testing <!-- outdated, update once API is finalized -->
+- `internal` - Internal packages and implementation logic
+  - `internal/handler` - API HTTP handlers/parsers and routing
+  - `internal/model` - Class definitions and methods
+  - `internal/scraper` - Scraper implementation
+- `postman` - Postman collections and environments for testing
 
 ## Getting started
 
@@ -61,26 +64,24 @@ go run ./cmd/api
 To use a custom port, set `PORT` first:
 
 ```cmd
-set PORT=8080
+set PORT=8081
 go run ./cmd/api
 ```
 
 ## Design Notes
 
 - LLMs were only used for answering technical questions, in order to necessitate personal learning. For instance, all documentation was hand written by me :p
-- Go's stdlib was used as much as possible, with the exception of a scraping framework ([Colly](https://github.com/gocolly/colly)) and a TLS impersonator ([uTLS](https://github.com/refraction-networking/utls))
-- The project's file structure was build from the ground up to be standardized
+- Go's stdlib was used as much as possible, with the exception of a scraping framework ([Colly](https://github.com/gocolly/colly)) and a TLS browser impersonator ([uTLS](https://github.com/refraction-networking/utls))
+- The project's file structure was build from the ground up to comply with standard practices
 - A lack of caching/storage was a deliberate choice, as this avoids possible violations of EU's GDPR laws
 
 ### Process Flow Diagram
 
-Our greatest scientists have created this wonderful process flow diagram to illustrate the API's architecture and data flow:
+Our greatest scientists have created this wonderful process flow chart to illustrate the API's architecture and data flow:
 
-![Flowchart](logic.png)
+![Cool and awesome flowchart](logic.png)
 
 ### Planned features
 
-- Parallelization of page retrieval via Goroutines
-- Opt-in listing caching w/ PostgreSQL
+- Opt-in listing caching w/ Redis
 - Front-end API demo
-- Front-end "best deal finder" application

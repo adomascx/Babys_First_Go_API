@@ -1,12 +1,15 @@
-openapi: 3.0.4
+openapi: 3.1.1
 info:
-  title: Baby's first Go API
-  description: A Proof-of-Concept Go REST API
-  version: 0.1.0
+  title: Skelbiu API
+  description: |
+    API that exposes scraped skelbiu.lt listings
+  version: 1.0.0
 
 servers:
   - url: https://babys-first-go-web-socket-omyhlhj4xq-lz.a.run.app
     description: Production server (Deployed on Google Cloud)
+  - url: http://localhost:8080
+    description: Local development server
 
 paths:
   /health:
@@ -19,42 +22,174 @@ paths:
             text/plain:
               schema:
                 type: string
+              example: "OK"
 
   /listings:
     get:
       summary: Returns a list of listings
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                URL:
-                  type: string
-                balance:
-                  type: integer
-                  format: int32
-              required:
-                - name
-                - balance
+      description: |
+        Returns scraped listings as a JSON array. Query parameters must match
+      parameters:
+        - name: Keyword
+          in: query
+          description: Search bar keywords
+          required: false
+          schema:
+            type: string
+        - name: Cities
+          in: query
+          description: Comma-separated city IDs
+          required: false
+          schema:
+            type: string
+          example: "465,43"
+        - name: CategoryID
+          in: query
+          description: Specific category ID
+          required: true
+          schema:
+            type: integer
+        - name: ListingOrigin
+          in: query
+          description: Lister origin
+          required: false
+          schema:
+            type: integer
+            oneOf:
+              - const: 0
+                title: ListerEither
+              - const: 1
+                title: ListerPrivate
+              - const: 2
+                title: ListerOrganization
+        - name: OrderBy
+          in: query
+          description: Ordering of listings
+          required: false
+          schema:
+            type: integer
+            oneOf:
+              - const: 0
+                title: Updated
+              - const: 1
+                title: Newest
+              - const: 2
+                title: Best
+              - const: 3
+                title: Cheapest
+              - const: 8
+                title: MostExpensive
+        - name: MinCost
+          in: query
+          description: Minimum price in EUR
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: MaxCost
+          in: query
+          description: Maximum price in EUR
+          required: false
+          schema:
+            type: number
+            format: float
+        - name: IsSeller
+          in: query
+          description: Seller/Buyer flag
+          required: false
+          schema:
+            type: integer
+            oneOf:
+              - const: 0
+                title: SellerOrBuyer
+              - const: 1
+                title: Seller
+              - const: 2
+                title: Buyer
+        - name: ConditionType
+          in: query
+          description: Condition type
+          required: false
+          schema:
+            type: integer
+            oneOf:
+              - const: 0
+                title: ConditionEither
+              - const: 1
+                title: ConditionNew
+              - const: 2
+                title: ConditionUsed
+        - name: Pages
+          in: query
+          description: Number of pages to scrape. If omitted/set to 0, defaults to 5 pages
+          required: false
+          schema:
+            type: integer
+            default: 5
+
       responses:
         "200":
-          description: The created user
+          description: A JSON array of listings
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    format: int32
-                  name:
-                    type: string
-                  balance:
-                    type: integer
-                    format: int32
-                required:
-                  - id
-                  - name
-                  - balance
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+              examples:
+                sample:
+                  summary: Short sample response
+                  value:
+                    - link: "https://skelbiu.lt/skelbimai/example"
+                      title: "Sample Listing"
+                      description: "A sample description"
+                      date: "2026-06-08"
+                      price: 123.45
+
+components:
+  schemas:
+    Listing:
+      type: object
+      properties:
+        link:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+        price:
+          type: number
+          format: float
+      required:
+        - link
+        - title
+    QueryParams:
+      type: object
+      description: |
+        Reference of query parameter names. The server expects these exact
+        capitalized field names.
+      properties:
+        Keyword:
+          type: string
+        Cities:
+          type: string
+        CategoryID:
+          type: integer
+        ListingOrigin:
+          type: integer
+        OrderBy:
+          type: integer
+        MinCost:
+          type: number
+          format: float
+        MaxCost:
+          type: number
+          format: float
+        IsSeller:
+          type: integer
+        ConditionType:
+          type: integer
+        Pages:
+          type: integer

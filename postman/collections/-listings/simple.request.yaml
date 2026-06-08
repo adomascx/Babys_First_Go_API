@@ -1,0 +1,10 @@
+$kind: http-request
+url: "{{url}}?CategoryID=80&Pages=1&OrderBy=1"
+method: GET
+queryParams:
+  CategoryID: "80"
+  Pages: "1"
+  OrderBy: "1"
+auth:
+  type: noauth
+order: 2000

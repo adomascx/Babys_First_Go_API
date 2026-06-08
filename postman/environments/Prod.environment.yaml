@@ -6,7 +6,7 @@ name: Prod
 color: null
 values:
   - key: baseUrl
-    value: "https://babys-first-go-web-socket-omyhlhj4xq-lz.a.run.app"
+    value: ""
     enabled: true
 createdAt: 2026-05-24T23:07:42.000Z
 updatedAt: 2026-05-24T23:10:43.000Z

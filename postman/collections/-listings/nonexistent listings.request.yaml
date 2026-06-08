@@ -1,0 +1,10 @@
+$kind: http-request
+url: "{{url}}?CategoryID=80&IsSeller=2&Pages=3&MinCost=123&MaxCost=124"
+method: GET
+queryParams:
+  CategoryID: "80"
+  IsSeller: "2"
+  Pages: "3"
+  MinCost: "123"
+  MaxCost: "124"
+order: 4000

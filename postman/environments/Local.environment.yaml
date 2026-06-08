@@ -6,7 +6,7 @@ name: Local
 color: null
 values:
   - key: baseUrl
-    value: "http://localhost:8080"
+    value: ""
     enabled: true
 createdAt: 2026-05-24T23:07:42.000Z
 updatedAt: 2026-05-24T23:10:36.000Z
