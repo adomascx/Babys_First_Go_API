@@ -61,7 +61,7 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 	rateLimit := os.Getenv("RATE_LIMIT")
 
 	if rateLimit == "" {
-		rateLimit = "1000"
+		rateLimit = "1500"
 	}
 
 	delay, err := time.ParseDuration(rateLimit + "ms")

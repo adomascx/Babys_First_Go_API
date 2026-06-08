@@ -70,7 +70,7 @@ go run ./cmd/api
 
 ## Design Notes
 
-- LLMs were only used for answering technical questions, in order to necessitate personal learning. For instance, all documentation was hand written by me :p
+- LLMs were only used for answering technical questions and setup creation, in order to necessitate personal learning. For instance, all documentation was hand written by me :p
 - Go's stdlib was used as much as possible, with the exception of a scraping framework ([Colly](https://github.com/gocolly/colly)) and a TLS browser impersonator ([uTLS](https://github.com/refraction-networking/utls))
 - The project's file structure was build from the ground up to comply with standard practices
 - A lack of caching/storage was a deliberate choice, as this avoids possible violations of EU's GDPR laws

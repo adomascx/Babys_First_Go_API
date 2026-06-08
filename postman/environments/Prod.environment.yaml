@@ -6,7 +6,7 @@ name: Prod
 color: null
 values:
   - key: baseUrl
-    value: ""
+    value: "https://babys-first-go-web-socket-909511268371.europe-north1.run.app"
     enabled: true
 createdAt: 2026-05-24T23:07:42.000Z
 updatedAt: 2026-05-24T23:10:43.000Z
