@@ -6,7 +6,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://babys-first-go-web-socket-909511268371.europe-north1.run.app/
+  - url: https://skelbiu-api-909511268371.europe-north1.run.app
     description: Production server (Deployed on Google Cloud)
   - url: http://localhost:8080
     description: Local development server

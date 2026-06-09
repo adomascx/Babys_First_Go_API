@@ -1,12 +1,12 @@
 owner: "50667789"
 team: "12061348"
 lastUpdatedBy: "50667789"
-lastRevision: 1779664243000
+lastRevision: 1780965739000
 name: Prod
 color: null
 values:
   - key: baseUrl
-    value: "https://babys-first-go-web-socket-909511268371.europe-north1.run.app"
+    value: https://skelbiu-api-909511268371.europe-north1.run.app
     enabled: true
 createdAt: 2026-05-24T23:07:42.000Z
-updatedAt: 2026-05-24T23:10:43.000Z
+updatedAt: 2026-06-09T00:42:19.000Z
