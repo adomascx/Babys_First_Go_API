@@ -15,7 +15,6 @@ import (
 )
 
 func GetHealth(w http.ResponseWriter, r *http.Request) {
-	log.Println("health request received")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
 }

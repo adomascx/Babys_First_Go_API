@@ -176,7 +176,7 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 
 		scrapeErr = fmt.Errorf("scraping failed: status = %v, url = %v, err = %w\n", r.StatusCode, r.Request.URL.String(), err)
 
-		log.Printf("colly encountered a problem when scraping:\nstatus code: %v\nrequest URL: %v\nerror: %v\n", r.StatusCode, r.Request.URL.String(), err)
+		log.Printf("colly encountered a problem when scraping: status=%d url=%s err=%v server=%q cf-ray=%q cf-cache-status=%q body=%q", r.StatusCode, r.Request.URL.String(), err, r.Headers.Get("Server"), r.Headers.Get("CF-Ray"), r.Headers.Get("CF-Cache-Status"), r.Body)
 	})
 
 	for page := 1; page <= pages; page++ {

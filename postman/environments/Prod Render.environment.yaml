@@ -1,0 +1,12 @@
+owner: "50667789"
+team: "12061348"
+lastUpdatedBy: "50667789"
+lastRevision: 1780967074000
+name: Prod Render
+color: null
+values:
+  - key: baseUrl
+    value: ""
+    enabled: true
+createdAt: 2026-06-09T01:04:03.000Z
+updatedAt: 2026-06-09T01:04:34.000Z
