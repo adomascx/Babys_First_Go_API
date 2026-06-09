@@ -6,8 +6,8 @@ info:
   version: 1.0.0
 
 servers:
-  - url: https://skelbiu-api-909511268371.europe-north1.run.app
-    description: Production server (Deployed on Google Cloud)
+  - url: https://skelbiu-api.onrender.com
+    description: Production server (Deployed on Render)
   - url: http://localhost:8080
     description: Local development server
 

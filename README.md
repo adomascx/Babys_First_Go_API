@@ -20,12 +20,15 @@ A Go REST API that serves scraped skelbiu.lt listings.
 This project implements an API representation of public Skelbiu.lt listings, which is particularly useful for listing analyses via LLMs (e.g. "best deal" finder).
 Aside from that, it serves as a personal training ground for learning Go's networking and API development fundamentals, both in serving and receiving HTTP requests, as well as best practices in production environments.
 
+> [!IMPORTANT]  
+> Cloud deployment is considered non-functioning due to Cloudflare blocking non-residential IPs. As such, any API usage must be done on a local server instance until the problem is resolved.
+
 ### Tech Stack
 
 - **Go** - Main language for the backend
   - **Colly** - Web scraping framework
   - **uTLS** - TLS browser impersonator
-- **Google Cloud Run** - Hosting the production server
+- **Render** - Hosting the production server
 - **Postman** - API endpoint testing
 - **Air** - Live reload for development
 
@@ -85,3 +88,4 @@ Our greatest scientists have created this wonderful process flow chart to illust
 
 - Opt-in listing caching w/ Redis
 - Front-end API demo
+- Server deployment on Ubuntu home server
