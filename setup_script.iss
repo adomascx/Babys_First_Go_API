@@ -128,7 +128,7 @@ begin
   RateLimitLabel.Left := 0;
   RateLimitLabel.Top := UseConcurrencyEdit.Top + ScaleY(34);
   RateLimitLabel.Width := EnvPage.SurfaceWidth;
-  RateLimitLabel.Caption := 'RATE_LIMIT - delay in ms between requests when concurrency is enabled';
+  RateLimitLabel.Caption := 'RATE_LIMIT - delay in ms between requests';
 
   RateLimitEdit := TNewEdit.Create(EnvPage);
   RateLimitEdit.Parent := EnvPage.Surface;
@@ -163,7 +163,7 @@ begin
     EnvText :=
       '# Whether to run scraping in async. Can result in blocked requests.' + #13#10 +
       'USE_CONCURRENCY=' + EnvValue(UseConcurrencyEdit, DefaultUseConcurrency) + #13#10#13#10 +
-      '# Delay in ms between sending requests. Depends on USE_CONCURRENCY being set to ''true''.' + #13#10 +
+      '# Delay in ms between sending requests.' + #13#10 +
       'RATE_LIMIT=' + EnvValue(RateLimitEdit, DefaultRateLimit) + #13#10#13#10 +
       '# Whether to cache results in the backend. Violates GDPR. Do not use.' + #13#10 +
       'USE_CACHING=' + EnvValue(UseCachingEdit, DefaultUseCaching) + #13#10;

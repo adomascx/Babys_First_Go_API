@@ -86,6 +86,17 @@ Our greatest scientists have created this wonderful process flow chart to illust
 
 ### Planned features
 
-- Opt-in listing caching w/ Redis
-- Front-end API demo
 - Server deployment on Ubuntu home server
+- Front-end API demo
+- Opt-in listing caching w/ Redis
+- Edge-case handling (Network interruptions, graceful shutdown)
+- Rolling release system
+
+<!-- 
+  TODO:
+  - Make API use skelbiu url names, not Go struct fields    !!!!!! ONLY RELEASE THIS AS v2.0, because it breaks API !!!!!!
+  - Add graceful shutdowns (test with launching a compiled executable or something)
+  - Add handling for Network interruptions by starting server again automatically
+  - Rolling release compiled installer
+  - Possibly remove Pascal code in installer script, as this wasn't hand written
+ -->

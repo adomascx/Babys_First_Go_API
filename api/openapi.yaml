@@ -28,104 +28,18 @@ paths:
     get:
       summary: Returns a list of listings
       description: |
-        Returns scraped listings as a JSON array. Query parameters must match
+        Returns scraped listings as a JSON array. API client's query must match documented parameters.
       parameters:
-        - name: Keyword
-          in: query
-          description: Search bar keywords
-          required: false
-          schema:
-            type: string
-        - name: Cities
-          in: query
-          description: Comma-separated city IDs
-          required: false
-          schema:
-            type: string
-          example: "465,43"
-        - name: CategoryID
-          in: query
-          description: Specific category ID
-          required: true
-          schema:
-            type: integer
-        - name: ListingOrigin
-          in: query
-          description: Lister origin
-          required: false
-          schema:
-            type: integer
-            oneOf:
-              - const: 0
-                title: ListerEither
-              - const: 1
-                title: ListerPrivate
-              - const: 2
-                title: ListerOrganization
-        - name: OrderBy
-          in: query
-          description: Ordering of listings
-          required: false
-          schema:
-            type: integer
-            oneOf:
-              - const: 0
-                title: Updated
-              - const: 1
-                title: Newest
-              - const: 2
-                title: Best
-              - const: 3
-                title: Cheapest
-              - const: 8
-                title: MostExpensive
-        - name: MinCost
-          in: query
-          description: Minimum price in EUR
-          required: false
-          schema:
-            type: number
-            format: float
-        - name: MaxCost
-          in: query
-          description: Maximum price in EUR
-          required: false
-          schema:
-            type: number
-            format: float
-        - name: IsSeller
-          in: query
-          description: Seller/Buyer flag
-          required: false
-          schema:
-            type: integer
-            oneOf:
-              - const: 0
-                title: SellerOrBuyer
-              - const: 1
-                title: Seller
-              - const: 2
-                title: Buyer
-        - name: ConditionType
-          in: query
-          description: Condition type
-          required: false
-          schema:
-            type: integer
-            oneOf:
-              - const: 0
-                title: ConditionEither
-              - const: 1
-                title: ConditionNew
-              - const: 2
-                title: ConditionUsed
-        - name: Pages
-          in: query
-          description: Number of pages to scrape. If omitted/set to 0, defaults to 5 pages
-          required: false
-          schema:
-            type: integer
-            default: 5
+        - $ref: "#/components/parameters/Keyword"
+        - $ref: "#/components/parameters/Cities"
+        - $ref: "#/components/parameters/CategoryID"
+        - $ref: "#/components/parameters/ListingOrigin"
+        - $ref: "#/components/parameters/OrderBy"
+        - $ref: "#/components/parameters/MinCost"
+        - $ref: "#/components/parameters/MaxCost"
+        - $ref: "#/components/parameters/IsSeller"
+        - $ref: "#/components/parameters/ConditionType"
+        - $ref: "#/components/parameters/Pages"
 
       responses:
         "200":
@@ -146,13 +60,141 @@ paths:
                       date: "2026-06-08"
                       price: 123.45
 
+        "400":
+          description: Invalid query parameters
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "invalid query"
+
+        "500":
+          description: Internal server error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "failed to scrape"
+
 components:
+  parameters:
+    Keyword:
+      name: Keyword
+      in: query
+      description: Search bar keywords
+      required: false
+      schema:
+        type: string
+
+    Cities:
+      name: Cities
+      in: query
+      description: Comma-separated city IDs
+      required: false
+      schema:
+        type: string
+      example: "465,43"
+
+    CategoryID:
+      name: CategoryID
+      in: query
+      description: Specific category ID
+      required: true
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1132
+
+    ListingOrigin:
+      name: ListingOrigin
+      in: query
+      description: |
+        Lister origin:
+        - 0 = either
+        - 1 = private
+        - 2 = organization
+      required: false
+      schema:
+        type: integer
+        enum: [0, 1, 2]
+
+    OrderBy:
+      name: OrderBy
+      in: query
+      description: |
+        Ordering of listings:
+        - 0 = updated
+        - 1 = newest
+        - 2 = best
+        - 3 = cheapest
+        - 8 = most expensive
+      required: false
+      schema:
+        type: integer
+        enum: [0, 1, 2, 3, 8]
+
+    MinCost:
+      name: MinCost
+      in: query
+      description: Minimum price in EUR
+      required: false
+      schema:
+        type: number
+        format: float
+
+    MaxCost:
+      name: MaxCost
+      in: query
+      description: Maximum price in EUR
+      required: false
+      schema:
+        type: number
+        format: float
+
+    IsSeller:
+      name: IsSeller
+      in: query
+      description: |
+        Seller/Buyer flag:
+        - 0 = seller or buyer
+        - 1 = seller
+        - 2 = buyer
+      required: false
+      schema:
+        type: integer
+        enum: [0, 1, 2]
+
+    ConditionType:
+      name: ConditionType
+      in: query
+      description: |
+        Condition type:
+        - 0 = either
+        - 1 = new
+        - 2 = used
+      required: false
+      schema:
+        type: integer
+        enum: [0, 1, 2]
+
+    Pages:
+      name: Pages
+      in: query
+      description: |
+        Number of pages to scrape.
+        If omitted or set to 0, defaults to 5 pages.
+      required: false
+      schema:
+        type: integer
+        default: 5
+
   schemas:
     Listing:
       type: object
       properties:
         link:
           type: string
+          format: uri
         title:
           type: string
         description:
@@ -162,34 +204,3 @@ components:
         price:
           type: number
           format: float
-      required:
-        - link
-        - title
-    QueryParams:
-      type: object
-      description: |
-        Reference of query parameter names. The server expects these exact
-        capitalized field names.
-      properties:
-        Keyword:
-          type: string
-        Cities:
-          type: string
-        CategoryID:
-          type: integer
-        ListingOrigin:
-          type: integer
-        OrderBy:
-          type: integer
-        MinCost:
-          type: number
-          format: float
-        MaxCost:
-          type: number
-          format: float
-        IsSeller:
-          type: integer
-        ConditionType:
-          type: integer
-        Pages:
-          type: integer
