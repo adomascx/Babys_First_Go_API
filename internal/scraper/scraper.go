@@ -2,7 +2,6 @@ package scraper
 
 import (
 	"context"
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"log"
@@ -18,7 +17,6 @@ import (
 	"github.com/adomascx/Skelbiu_API/internal/model"
 	"github.com/gocolly/colly/v2"
 	utls "github.com/refraction-networking/utls"
-	"golang.org/x/net/http2"
 )
 
 const (
@@ -27,6 +25,18 @@ const (
 	chromeUA        = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
 	listingsPerPage = 24
 	defaultPages    = 5
+)
+
+var (
+	cookieJar, _ = cookiejar.New(nil)
+	// TODO: Add exported browser cookies to request
+	// OTAdditionalConsentString: 1~
+	// OptanonAlertBoxClosed: 2026-06-13T16:38:32.191Z
+	// eupubconsent-v2: CQlvIEgQlvIEgAcABBLTCjFgAAAAAELAAChQAAAUBQDMFComhLB0kChQWAIERAgjiACAABgAAkBQAQJgQQByBAEPsIgAAAQAAgAMAABBAACAAASABCIAAACAQAiACEQABgAACAQAUCAACIixAAgABANBQCAggEgwAQIQojBAgAAAAAAACAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAIABAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAEAQhAOAAWADUAKoAbwBgAFzAMUAbQBHoCrAFigLRAXIAuwgAIAAeAGgAZYA5ACOAKTAWIBAQtAEABqAMAA
+	// __cf_bm: GgnXM1q_14jnYaSP8v_quGPH
+	// sessionRemID: cpb564v2gm977jul1mkllac4bu
+	// PHPSESSID: cpb564v2gm977jul1mkllac4bu
+	// OptanonConsent: isGpcEnabled
 )
 
 // If pages is set to 0, defaults to 5
@@ -69,64 +79,20 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 		return nil, fmt.Errorf("could not parse duration for RATE_LIMIT: %w\n", err)
 	}
 
-	err = collector.Limit(&colly.LimitRule{
-		DomainGlob:  skelbiuHost,
-		Parallelism: 2,
-		Delay:       delay,
-		RandomDelay: 500 * time.Millisecond,
-	})
-	if err != nil {
-		return nil, err
+	if pages > 1 {
+		err = collector.Limit(&colly.LimitRule{
+			DomainGlob:  skelbiuHost,
+			Parallelism: 2,
+			Delay:       delay,
+			RandomDelay: 500 * time.Millisecond,
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	// Create dialer raw TCP connection
-	dialer := &net.Dialer{
-		Timeout:   15 * time.Second,
-		KeepAlive: 30 * time.Second,
-	}
-
-	// Connect and wrap with uTLS
-	utlsTransport := &http2.Transport{
-		DialTLSContext: func(ctx context.Context, network, addr string, cfg *tls.Config) (net.Conn, error) {
-			// Open TCP connection
-			rawConn, err := dialer.DialContext(ctx, network, addr)
-			if err != nil {
-				return nil, fmt.Errorf("could not do dialer.DialContext(): %w\n", err)
-			}
-
-			// Configure uTLS
-			utlsConfig := &utls.Config{
-				ServerName: skelbiuHost,
-				NextProtos: []string{"h2", "http/1.1"},
-				MinVersion: utls.VersionTLS12,
-			}
-
-			// Create uTLS connection
-			uconn := utls.UClient(rawConn, utlsConfig, utls.HelloChrome_Auto)
-
-			// Perform TLS handshake
-			err = uconn.HandshakeContext(ctx)
-			if err != nil {
-				return nil, fmt.Errorf("could not do uconn.HandshakeContext(%v): %w\n", ctx, err)
-			}
-
-			return uconn, nil
-		},
-	}
-
-	cookieJar, err := cookiejar.New(nil)
-	if err != nil {
-		return nil, fmt.Errorf("could not create cookiejar: %w\n", err)
-	}
-
-	// Attach uTLS connection to Colly
-	utlsClient := &http.Client{
-		Timeout:   30 * time.Second,
-		Transport: utlsTransport,
-		Jar:       cookieJar,
-	}
-
-	collector.SetClient(utlsClient)
+	// create HTTP connection via uTLS
+	collector.SetClient(newUtlsClient())
 
 	var (
 		mutex     sync.Mutex
@@ -156,7 +122,7 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 		priceStr := h.ChildTexts(".price")
 		price := 0.0
 
-		// filter listings with no price tag (usually when lister type is buyer)
+		// filter listings with no price tag (usually needed when lister type is buyer)
 		if len(priceStr) != 0 {
 			price, err = parsePrice(priceStr[0])
 			if err != nil {
@@ -174,10 +140,17 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 
 	collector.OnError(func(r *colly.Response, err error) {
 
+		mutex.Lock()
 		scrapeErr = fmt.Errorf("scraping failed: status = %v, url = %v, err = %w\n", r.StatusCode, r.Request.URL.String(), err)
+		mutex.Unlock()
 
 		// log extra info to help fix 403 errors
-		log.Printf("colly encountered a problem when scraping: status = %d, url = %s, err = %v, server = %q, cf-ray = %q, cf-cache-status = %q", r.StatusCode, r.Request.URL.String(), err, r.Headers.Get("Server"), r.Headers.Get("CF-Ray"), r.Headers.Get("CF-Cache-Status"))
+		log.Printf("colly encountered a problem when scraping: status = %d, url = %s, err = %v",
+			r.StatusCode,
+			r.Request.URL.String(),
+			err,
+		)
+
 	})
 
 	for page := 1; page <= pages; page++ {
@@ -197,6 +170,50 @@ func ScrapeListings(query model.QueryParams, pages int) (model.Listings, error) 
 	}
 
 	return listings, nil
+}
+
+func newUtlsClient() *http.Client {
+	// Create TCP connection dialer
+	dialer := &net.Dialer{
+		Timeout:   15 * time.Second,
+		KeepAlive: 30 * time.Second,
+	}
+
+	// Connect and wrap with uTLS
+	utlsTransport := &http.Transport{
+		DialTLSContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			// Open TCP connection
+			rawConn, err := dialer.DialContext(ctx, network, addr)
+			if err != nil {
+				return nil, fmt.Errorf("could not dial TCP: %w\n", err)
+			}
+
+			// Config uTLS
+			utlsConfig := &utls.Config{
+				ServerName: skelbiuHost,
+				NextProtos: []string{"http/1.1"},
+				MinVersion: utls.VersionTLS12,
+			}
+
+			// Create uTLS connection
+			uconn := utls.UClient(rawConn, utlsConfig, utls.HelloChrome_Auto)
+
+			// Perform TLS handshake
+			err = uconn.HandshakeContext(ctx)
+			if err != nil {
+				return nil, fmt.Errorf("could not do uconn.HandshakeContext(%v): %w\n", ctx, err)
+			}
+
+			return uconn, nil
+		},
+	}
+
+	// Attach uTLS connection to Colly
+	return &http.Client{
+		Timeout:   30 * time.Second,
+		Transport: utlsTransport,
+		Jar:       cookieJar,
+	}
 }
 
 func parsePrice(priceStr string) (float64, error) {
