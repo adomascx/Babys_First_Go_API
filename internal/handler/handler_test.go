@@ -9,7 +9,7 @@ import (
 
 type output struct {
 	query model.QueryParams
-	page  int
+	pages int
 	err   string
 }
 
@@ -22,36 +22,38 @@ func TestParseQuery(t *testing.T) {
 		{
 			description: "empty input",
 			inputQuery:  url.Values{},
-			want:        output{model.QueryParams{}, 0, ""},
+			want:        output{model.QueryParams{}, 0, "query must contain category ID"},
 		},
 		{
-			description: "2 simple params",
+			description: "3 simple params",
 			inputQuery: url.Values{
-				"IsSeller": []string{"2"},
-				"Pages":    []string{"3"},
+				"CategoryID": []string{"80"},
+				"IsSeller":   []string{"2"},
+				"Pages":      []string{"3"},
 			},
-			want: output{model.QueryParams{IsSeller: model.Buyer}, 3, ""},
+			want: output{model.QueryParams{CategoryID: 80, IsSeller: model.Buyer}, 3, ""},
 		},
 		{
 			description: "all types",
 			inputQuery: url.Values{
-				"Cities":   []string{"465,43"},
-				"MinCost":  []string{"12.34"},
-				"IsSeller": []string{"2"},
+				"CategoryID": []string{"80"},
+				"Cities":     []string{"465,43"},
+				"MinCost":    []string{"12.34"},
+				"IsSeller":   []string{"2"},
 			},
-			want: output{model.QueryParams{Cities: "465,43", MinCost: 12.34, IsSeller: model.Buyer}, 0, ""},
+			want: output{model.QueryParams{CategoryID: 80, Cities: "465,43", MinCost: 12.34, IsSeller: model.Buyer}, 0, ""},
 		},
 		{
 			description: "incorrect query struct key",
 			inputQuery: url.Values{
 				"Cityz": []string{"465,43"},
 			},
-			want: output{model.QueryParams{}, 0, "The field \"Cityz\" does not exist"},
+			want: output{model.QueryParams{}, 0, "the field \"Cityz\" does not exist"},
 		},
 	}
 	for _, tC := range testCases {
 		t.Run(tC.description, func(t *testing.T) {
-			query, page, err := parseQuery(tC.inputQuery)
+			query, pages, err := parseQuery(tC.inputQuery)
 
 			errString := ""
 			if err != nil {
@@ -60,7 +62,7 @@ func TestParseQuery(t *testing.T) {
 
 			have := output{
 				query: query,
-				page:  page,
+				pages: pages,
 				err:   errString,
 			}
 

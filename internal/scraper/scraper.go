@@ -219,15 +219,15 @@ func newUtlsClient() *http.Client {
 func parsePrice(priceStr string) (float64, error) {
 	var cleanedStr strings.Builder
 
-	for _, rune := range priceStr {
+	for _, char := range priceStr {
 		// change decimal point to Go float standard
-		if rune == ',' {
-			rune = '.'
-		} else if rune < '0' || rune > '9' { // only accept digits 0-9
+		if char == ',' {
+			char = '.'
+		} else if char < '0' || char > '9' { // only accept digits 0-9
 			continue
 		}
 
-		cleanedStr.WriteRune(rune)
+		cleanedStr.WriteRune(char)
 	}
 
 	// if price not provided, return default value of 0
