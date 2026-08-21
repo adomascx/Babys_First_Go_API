@@ -3,10 +3,10 @@
 ; Non-commercial use only
 
 #define MyAppName "Skelbiu API"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.1"
 #define MyAppPublisher "Adomas Lukoševičius"
 #define MyAppURL "https://github.com/adomascx/Skelbiu_API/"
-#define MyAppExeName "api.exe"
+#define MyAppExeName "skelbiu-api.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.

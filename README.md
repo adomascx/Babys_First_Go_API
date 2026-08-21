@@ -1,6 +1,6 @@
 # Skelbiu API
 
-A Go REST API that serves scraped skelbiu.lt listings.
+A REST API written in Go that returns structured skelbiu.lt listing data.
 
 ## Table of Contents
 
@@ -17,11 +17,11 @@ A Go REST API that serves scraped skelbiu.lt listings.
 
 ## Project Description
 
-This project implements an API representation of public Skelbiu.lt listings, which is particularly useful for listing analyses via LLMs (e.g. "best deal" finder).
+This project implements an API that returns a structured JSON representation of public Skelbiu.lt listings' data.
 Aside from that, it serves as a personal training ground for learning Go's networking and API development fundamentals, both in serving and receiving HTTP requests, as well as best practices in production environments.
 
 > [!IMPORTANT]  
-> Cloud deployment is considered non-functioning due to Cloudflare blocking non-residential IPs. As such, any API usage must be done on a local server instance until the problem is resolved.
+> Cloud deployment is considered non-functioning due to Cloudflare blocking standard cloud IPs. As such, any API usage must be done on a local server instance until a self-hosted solution is implemented.
 
 ### Tech Stack
 
@@ -34,11 +34,12 @@ Aside from that, it serves as a personal training ground for learning Go's netwo
 
 ### Features
 
+- Filtering/conversion of listing data into predefinded structs
 - Full OpenAPI specifications
 - Integrated Postman `Local` and `Prod` environments
 - Ready-to-use Air and Postman configs
 - Full unit testing/benchmarks suite
-- Parallel page scraping
+- Parallel page retrieval and processing
 
 ### Project Structure
 
@@ -52,31 +53,31 @@ Aside from that, it serves as a personal training ground for learning Go's netwo
 
 ## Getting started
 
-The live server can be run with *air*:
+The live development server can be run with *air*:
 
 ```cmd
 air
 ```
 
-If you want to run it manually instead, use:
+If you want to run manually instead, use:
 
 ```cmd
 go run ./cmd/api
 ```
 
-To use a custom port, set `PORT` first:
+Change:
 
 ```cmd
-set PORT=8081
-go run ./cmd/api
+go run ./cmd/api \
+    PORT=8081
 ```
 
 ## Design Notes
 
 - LLMs were only used for answering technical questions and setup creation, in order to necessitate personal learning. For instance, all documentation was hand written by me :p
-- Go's stdlib was used as much as possible, with the exception of a scraping framework ([Colly](https://github.com/gocolly/colly)) and a TLS browser impersonator ([uTLS](https://github.com/refraction-networking/utls))
-- The project's file structure was build from the ground up to comply with standard practices
-- A lack of caching/storage was a deliberate choice, as this avoids possible violations of EU's GDPR laws
+- Go's stdlib was used as much as possible, with the exception of a scraping framework ([Colly](https://github.com/gocolly/colly)) and a TLS client ([uTLS](https://github.com/refraction-networking/utls))
+- The project's file structure was build from the ground up to follow standard practices
+- A lack of caching/storage was a deliberate choice to fully comply with GDPR
 
 ### Process Flow Diagram
 
@@ -86,17 +87,8 @@ Our greatest scientists have created this wonderful process flow chart to illust
 
 ### Planned features
 
-- Server deployment on Ubuntu home server
+- Local server deployment
 - Front-end API demo
 - Opt-in listing caching w/ Redis
 - Edge-case handling (Network interruptions, graceful shutdown)
 - Rolling release system
-
-<!-- 
-  TODO:
-  - Make API use skelbiu url names, not Go struct fields    !!!!!! ONLY RELEASE THIS AS v2.0, because it breaks API !!!!!!
-  - Add graceful shutdowns for server (test with launching a compiled executable or something)
-  - Add handling for Network interruptions by starting server again automatically
-  - Rolling release compiled installer
-  - Possibly remove Pascal code in installer script, as this wasn't hand written
- -->
